@@ -6,7 +6,7 @@
 <p><a href="/admin">⬅️ Înapoi la panou</a></p>
 <div class="container lista-articole">
     <h2>Articole existente</h2>
-    {% for id, titlu, data, vizibil in articole %}
+    {% for id, titlu, data, vizibil, autor in articole %}
         <div class="articol-card">
             <strong>{{ titlu }}</strong><br>
             <small>{{ data }} | {{ 'Vizibil' if vizibil else 'Privat' }}</small><br>
