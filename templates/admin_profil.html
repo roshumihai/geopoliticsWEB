@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/admin">⬅️ Înapoi la panou</a></p>
+<div class="container">
+    <h2>Modifică datele contului</h2>
+
+    {% if mesaj %}
+        <p style="color: green;">{{ mesaj }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <label for="username">Nume utilizator nou:</label>
+        <input type="text" name="username" id="username" value="{{ session['user'] }}" required><br><br>
+
+        <label for="parola">Parolă nouă:</label>
+        <input type="password" name="parola" id="parola" required><br><br>
+
+        <button type="submit">💾 Salvează modificările</button>
+    </form>
+
+    <p style="margin-top: 20px;">
+        <a href="/admin">⬅️ Înapoi la panou</a>
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>{{ titlu }}</h2>
+    <p class="data">{{ data }}</p>
+    <div class="continut-articol">
+        {{ continut|safe }}
+        <p class="data">{{ data }} | Scris de: <strong>{{ autor }}</strong></p>
+    </div>
+
+    <button id="likeBtn"
+        class="like-btn {{ 'liked' if a_dat_like else '' }}"
+        data-id="{{ articol_id }}">
+    👍 <span id="likeText">{{ 'Îți place' if a_dat_like else 'Like' }}</span>
+    </button>
+    <span id="likeCount">{{ likes }} like{{ 'uri' if likes != 1 else '' }}</span>
+
+    <p><a href="/">⬅️ Înapoi la articole</a></p>
+</div>
+
+<script>
+document.getElementById("likeBtn").addEventListener("click", function () {
+    const btn = this;
+    const id = btn.getAttribute("data-id");
+
+    fetch(`/api/like/${id}`, {
+        method: "POST"
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const likeText = document.getElementById("likeText");
+            const likeCount = document.getElementById("likeCount");
+
+            if (data.actiune === "liked") {
+                btn.classList.add("liked");
+                likeText.textContent = "Îți place";
+            } else {
+                btn.classList.remove("liked");
+                likeText.textContent = "Like";
+            }
+
+            likeCount.textContent = `${data.total} like${data.total !== 1 ? 'uri' : ''}`;
+        }
+    });
+});
+</script>
+{% endblock %}

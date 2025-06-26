@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<p style="text-align:right;">
+    <a href="/logout">🔓 Deconectare</a>
+</p>
+<p><a href="/admin">⬅️ Înapoi la panou</a></p>
+<div class="container">
+    <h2>Editează articol</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="text" name="titlu" value="{{ articol[0] }}" required><br><br>
+        <textarea name="continut" rows="7" required>{{ articol[1]|safe }}</textarea><br><br>
+        <label>
+            <input type="checkbox" name="vizibil" {% if articol[2] %}checked{% endif %}>
+            Vizibil public
+        </label><br><br>
+        <label>Adaugă poze noi (opțional):</label><br>
+        <input type="file" name="poze" accept="image/*" multiple><br><br>
+        <button type="submit">Salvează modificările</button>
+    </form>
+</div>
+{% endblock %}

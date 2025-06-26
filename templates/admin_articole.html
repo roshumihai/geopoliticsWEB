@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<p style="text-align:right;">
+    <a href="/logout">🔓 Deconectare</a>
+</p>
+<p><a href="/admin">⬅️ Înapoi la panou</a></p>
+<div class="container lista-articole">
+    <h2>Articole existente</h2>
+    {% for id, titlu, data, vizibil in articole %}
+        <div class="articol-card">
+            <strong>{{ titlu }}</strong><br>
+            <small>{{ data }} | {{ 'Vizibil' if vizibil else 'Privat' }}</small><br>
+            <a href="{{ url_for('editeaza_articol', id=id) }}">✏️ Editează</a> |
+            <form method="POST" action="{{ url_for('sterge_articol', id=id) }}" style="display:inline;" onsubmit="return confirm('Ești sigur că vrei să ștergi articolul?');">
+                <button type="submit" style="color:red;background:none;border:none;cursor:pointer;">🗑️ Șterge</button>
+            </form>
+        </div>
+    {% else %}
+        <p>Nu există articole.</p>
+    {% endfor %}
+</div>
+{% endblock %}

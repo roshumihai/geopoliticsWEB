@@ -1,0 +1,282 @@
+/* ===== Reset + Bază ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f2f5;
+    color: #222;
+    line-height: 1.6;
+}
+
+/* ===== Header & Navigație ===== */
+header {
+    background-color: #0b0c10;
+    color: #fff;
+    padding: 30px 20px 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+header h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+nav {
+    margin-top: 10px;
+}
+nav a {
+    color: #e0e0e0;
+    text-decoration: none;
+    margin: 0 12px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+nav a:hover {
+    color: #61dafb;
+}
+
+.titlu-pagina {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+}
+
+/* ===== Conținut principal ===== */
+main {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* ===== Elemente generale ===== */
+a {
+    color: #0077cc;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+.container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.container p a {
+    color: #0077cc;
+    font-weight: bold;
+    text-decoration: none;
+}
+.container p a:hover {
+    text-decoration: underline;
+}
+
+form {
+    margin-top: 20px;
+}
+
+form input[type="text"],
+form textarea,
+form input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    background-color: #fafafa;
+}
+
+form textarea {
+    resize: vertical;
+}
+
+form label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+form input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+form button {
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #005fa3;
+}
+
+
+form label[for="vizibil"],
+form label[for="poze"] {
+    margin-top: 10px;
+    display: block;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+form input[type="file"] {
+    background-color: #fafafa;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+form button {
+    margin-top: 15px;
+}
+
+/* ===== Listă articole admin ===== */
+.lista-articole {
+    margin-top: 30px;
+}
+
+.articol-card {
+    background: #fdfdfd;
+    padding: 15px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.articol-card strong {
+    font-size: 18px;
+    color: #222;
+}
+
+.articol-card small {
+    color: #555;
+    font-size: 13px;
+}
+
+.articol-card a {
+    color: #0077cc;
+    font-weight: 500;
+    margin-right: 15px;
+    text-decoration: none;
+}
+
+.articol-card a:hover {
+    text-decoration: underline;
+}
+
+.articol-card form {
+    display: inline;
+}
+
+.articol-card form button {
+    color: red;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.articol-card form button:hover {
+    text-decoration: underline;
+}
+
+/* ===== Afișare articole publice ===== */
+.articol {
+    margin-bottom: 50px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.articol h2 {
+    font-size: 24px;
+    color: #222;
+    margin-bottom: 10px;
+}
+
+.articol h2 a {
+    text-decoration: none;
+    color: #0077cc;
+}
+.articol h2 a:hover {
+    text-decoration: underline;
+}
+
+.articol .data {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.articol p {
+    font-size: 17px;
+    color: #333;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow: hidden;
+}
+
+.articol img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.continut-articol {
+    font-size: 17px;
+    line-height: 1.7;
+    color: #333;
+    white-space: pre-wrap;
+    margin-top: 20px;
+}
+
+.continut-articol img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.like-btn {
+    margin: 0px 0 10px 0;
+    background-color: transparent;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: 0.3s ease;
+}
+
+.like-btn:hover {
+    background-color: #eee;
+}
+
+.like-btn.liked {
+    background-color: #1877f2;
+    color: white;
+    border-color: #1877f2;
+}

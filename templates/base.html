@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Politica & Geopolitica liberă</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Politica & Geopolitica liberă</h1>
+        <nav>
+            <a href="/">Acasă</a>
+            <a href="/politica">Politică</a>
+            <a href="/geopolitica">Geopolitică</a>
+            <a href="/istorie">Istorie</a>
+        </nav>
+    </header>
+    <h2 class="titlu-pagina">{{ titlu_pagina if titlu_pagina else 'Ultimele articole' }}</h2>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

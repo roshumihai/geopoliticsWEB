@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<p style="text-align:right;">
+    <a href="/logout">🔓 Deconectare</a>
+</p>
+<p><a href="/admin/adauga-utilizator">➕ Adaugă utilizator nou</a></p>
+<div class="container">
+    <h2>Panou Admin – Adaugă articol</h2>
+    {% if mesaj %}
+        <p style="color: green;">{{ mesaj }}</p>
+    {% endif %}
+    <p><a href="/admin/articole">🔍 Vezi articolele existente</a></p>
+    <form method="POST" enctype="multipart/form-data">
+    <input type="text" name="titlu" placeholder="Titlu articol" required><br><br>
+        <textarea name="continut" rows="7" placeholder="Conținut articol..." required></textarea><br><br>
+        <label>
+            <input type="checkbox" name="vizibil">
+            Fă articolul public
+        </label><br><br>
+
+        <h3>Selectează categorii:</h3>
+        {% for cat in ['politica', 'geopolitica', 'istorie'] %}
+            <label>
+                <input type="checkbox" name="categorii" value="{{ cat }}"> {{ cat.capitalize() }}
+            </label><br>
+        {% endfor %}
+
+        <br>
+        <input type="file" name="poze" accept="image/*" multiple><br><br>
+        <button type="submit">Publică articolul</button>
+    </form>
+
+</div>
+{% endblock %}

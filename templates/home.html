@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    {% for id, titlu, continut, data_postarii, autor in articole %}
+    <div class="articol">
+        <h2><a href="{{ url_for('articol_complet', id=id) }}">{{ titlu }}</a></h2>
+        <p class="data">{{ data_postarii }} | Scris de: <strong>{{ autor }}</strong></p>
+        <p>{{ continut|truncate(500)|safe }}</p>
+    </div>
+    {% else %}
+        <p>Nu există articole vizibile momentan.</p>
+    {% endfor %}
+
+</div>
+{% endblock %}
