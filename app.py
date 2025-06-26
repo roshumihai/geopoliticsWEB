@@ -71,7 +71,7 @@ def init_db():
         # Inserare categorii implicite
         categorii = ['politica', 'geopolitica', 'istorie']
         for cat in categorii:
-            c.execute("INSERT OR IGNORE INTO categorii (nume) VALUES (%s)", (cat,))
+            c.execute("INSERT INTO categorii (nume) VALUES (%s) ON CONFLICT (nume) DO NOTHING", (cat,))
 
         # Utilizator admin default
         c.execute("SELECT * FROM utilizatori WHERE username = 'admin'")
