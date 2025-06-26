@@ -39,7 +39,7 @@ def init_db():
 
         # Articole
         c.execute('''CREATE TABLE IF NOT EXISTS articole (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             titlu TEXT NOT NULL,
             continut TEXT NOT NULL,
             data_postarii TEXT NOT NULL,
@@ -49,14 +49,14 @@ def init_db():
 
         # Utilizatori
         c.execute('''CREATE TABLE IF NOT EXISTS utilizatori (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             username TEXT UNIQUE NOT NULL,
             parola TEXT NOT NULL
         )''')
 
         # Categorii
         c.execute('''CREATE TABLE IF NOT EXISTS categorii (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             nume TEXT UNIQUE NOT NULL
         )''')
 
