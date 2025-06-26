@@ -153,16 +153,22 @@ def admin_panel():
         with get_db_connection() as conn:
             c = conn.cursor()
             autor = session.get('user', 'Anonim')
-            c.execute("INSERT INTO articole (titlu, continut, data_postarii, vizibil, autor) VALUES (%s, %s, %s, %s, %s)",
-                      (titlu, continut_complet, data_postarii, vizibil, autor))
-            categorii_selectate = request.form.getlist('categorii')  # obține lista bifată din formular
+            c.execute(
+                "INSERT INTO articole (titlu, continut, data_postarii, vizibil, autor) VALUES (%s, %s, %s, %s, %s) RETURNING id",
+                (titlu, continut_complet, data_postarii, vizibil, autor)
+            )
+            articol_id = c.fetchone()[0]
+
+            categorii_selectate = request.form.getlist('categorii')
             c.execute("SELECT id, nume FROM categorii")
             categorie_map = {nume: id_ for id_, nume in c.fetchall()}
 
             for cat in categorii_selectate:
                 if cat in categorie_map:
-                    c.execute("INSERT INTO articol_categorie (articol_id, categorie_id) VALUES (%s, %s)",
-                              (c.lastrowid, categorie_map[cat]))
+                    c.execute(
+                        "INSERT INTO articol_categorie (articol_id, categorie_id) VALUES (%s, %s)",
+                        (articol_id, categorie_map[cat])
+                    )
             conn.commit()
             mesaj = "Articol adăugat cu succes!"
 
