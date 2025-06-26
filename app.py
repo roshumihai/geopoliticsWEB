@@ -2,7 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from flask_bcrypt import Bcrypt
 import sqlite3
 from datetime import datetime
+import psycopg2
 import os
+import urllib.parse as urlparse
 from werkzeug.utils import secure_filename
 
 
@@ -16,8 +18,23 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+def get_db_connection():
+    db_name = os.environ.get('DB_NAME')
+    db_user = os.environ.get('DB_USER')
+    db_pass = os.environ.get('DB_PASS')
+    db_host = os.environ.get('DB_HOST')
+    db_port = os.environ.get('DB_PORT')
+
+    return psycopg2.connect(
+        dbname=db_name,
+        user=db_user,
+        password=db_pass,
+        host=db_host,
+        port=db_port
+    )
+
 def init_db():
-    with sqlite3.connect('data.db') as conn:
+    with get_db_connection() as conn:
         c = conn.cursor()
 
         # Articole
@@ -78,7 +95,7 @@ def extensie_valida(nume_fisier):
 
 @app.route('/')
 def home():
-    with sqlite3.connect('data.db') as conn:
+    with get_db_connection() as conn:
         c = conn.cursor()
         c.execute("SELECT id, titlu, continut, data_postarii, autor FROM articole WHERE vizibil=1 ORDER BY id DESC")
         articole = c.fetchall()
@@ -89,7 +106,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         parola = request.form['parola']
-        with sqlite3.connect('data.db') as conn:
+        with get_db_connection() as conn:
             c = conn.cursor()
             c.execute("SELECT parola FROM utilizatori WHERE username = ?", (username,))
             user = c.fetchone()
@@ -133,7 +150,7 @@ def admin_panel():
         for poza in poze_salvate:
             continut_complet += f'<br><img src="/static/uploads/{poza}" style="max-width:100%;">'
 
-        with sqlite3.connect('data.db') as conn:
+        with get_db_connection() as conn:
             c = conn.cursor()
             autor = session.get('user', 'Anonim')
             c.execute("INSERT INTO articole (titlu, continut, data_postarii, vizibil, autor) VALUES (?, ?, ?, ?, ?)",
@@ -162,7 +179,7 @@ def adauga_utilizator():
         parola = request.form['parola']
         parola_hash = bcrypt.generate_password_hash(parola).decode('utf-8')
 
-        with sqlite3.connect('data.db') as conn:
+        with get_db_connection() as conn:
             c = conn.cursor()
             try:
                 c.execute("INSERT INTO utilizatori (username, parola) VALUES (?, ?)", (username, parola_hash))
@@ -185,7 +202,7 @@ def modifica_profil():
         parola_noua = request.form['parola']
         parola_hash = bcrypt.generate_password_hash(parola_noua).decode('utf-8')
 
-        with sqlite3.connect('data.db') as conn:
+        with get_db_connection() as conn:
             c = conn.cursor()
             c.execute("UPDATE utilizatori SET username = ?, parola = ? WHERE username = ?",
                       (user_nou, parola_hash, user_vechi))
@@ -198,7 +215,7 @@ def modifica_profil():
 def lista_articole():
     if 'user' not in session:
         return redirect(url_for('login'))
-    with sqlite3.connect('data.db') as conn:
+    with get_db_connection() as conn:
         c = conn.cursor()
         c.execute("SELECT id, titlu, data_postarii, vizibil, autor FROM articole ORDER BY id DESC")
         articole = c.fetchall()
@@ -209,7 +226,7 @@ def editeaza_articol(id):
     if 'user' not in session:
         return redirect(url_for('login'))
 
-    with sqlite3.connect('data.db') as conn:
+    with get_db_connection() as conn:
         c = conn.cursor()
         if request.method == 'POST':
             titlu = request.form['titlu']
@@ -244,7 +261,7 @@ def editeaza_articol(id):
 def sterge_articol(id):
     if 'user' not in session:
         return redirect(url_for('login'))
-    with sqlite3.connect('data.db') as conn:
+    with get_db_connection() as conn:
         c = conn.cursor()
         c.execute("DELETE FROM articole WHERE id=?", (id,))
         conn.commit()
@@ -252,7 +269,7 @@ def sterge_articol(id):
 
 @app.route('/articol/<int:id>')
 def articol_complet(id):
-    with sqlite3.connect('data.db') as conn:
+    with get_db_connection() as conn:
         c = conn.cursor()
         c.execute("SELECT titlu, continut, data_postarii, autor FROM articole WHERE id = ? AND vizibil = 1", (id,))
         articol = c.fetchone()
@@ -276,7 +293,7 @@ def articol_complet(id):
 
 @app.route('/<categorie>')
 def pagina_categorie(categorie):
-    with sqlite3.connect('data.db') as conn:
+    with get_db_connection() as conn:
         c = conn.cursor()
         c.execute("""
             SELECT a.id, a.titlu, a.continut, a.data_postarii , a.autor
@@ -300,7 +317,7 @@ def toggle_like(id):
         return redirect(url_for('login'))
 
     user = session['user']
-    with sqlite3.connect('data.db') as conn:
+    with get_db_connection() as conn:
         c = conn.cursor()
         c.execute("SELECT * FROM likes WHERE articol_id = ? AND username = ?", (id, user))
         exista = c.fetchone()
@@ -321,7 +338,7 @@ def api_toggle_like(id):
         return jsonify({"success": False, "message": "Neautentificat"}), 401
 
     user = session['user']
-    with sqlite3.connect('data.db') as conn:
+    with get_db_connection() as conn:
         c = conn.cursor()
         c.execute("SELECT * FROM likes WHERE articol_id = ? AND username = ?", (id, user))
         exista = c.fetchone()
