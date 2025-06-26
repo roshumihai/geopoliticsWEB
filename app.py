@@ -71,7 +71,7 @@ def init_db():
         # Inserare categorii implicite
         categorii = ['politica', 'geopolitica', 'istorie']
         for cat in categorii:
-            c.execute("INSERT OR IGNORE INTO categorii (nume) VALUES (?)", (cat,))
+            c.execute("INSERT OR IGNORE INTO categorii (nume) VALUES (%s)", (cat,))
 
         # Utilizator admin default
         c.execute("SELECT * FROM utilizatori WHERE username = 'admin'")
@@ -79,7 +79,7 @@ def init_db():
             from flask_bcrypt import Bcrypt
             bcrypt = Bcrypt()
             parola_hash = bcrypt.generate_password_hash('admin123').decode('utf-8')
-            c.execute("INSERT INTO utilizatori (username, parola) VALUES (?, ?)", ('admin', parola_hash))
+            c.execute("INSERT INTO utilizatori (username, parola) VALUES (%s, %s)", ('admin', parola_hash))
 
         # Like-uri (legătură articol - user)
         c.execute('''CREATE TABLE IF NOT EXISTS likes (
@@ -108,7 +108,7 @@ def login():
         parola = request.form['parola']
         with get_db_connection() as conn:
             c = conn.cursor()
-            c.execute("SELECT parola FROM utilizatori WHERE username = ?", (username,))
+            c.execute("SELECT parola FROM utilizatori WHERE username = %s", (username,))
             user = c.fetchone()
             if user and bcrypt.check_password_hash(user[0], parola):
                 session['user'] = username
@@ -153,7 +153,7 @@ def admin_panel():
         with get_db_connection() as conn:
             c = conn.cursor()
             autor = session.get('user', 'Anonim')
-            c.execute("INSERT INTO articole (titlu, continut, data_postarii, vizibil, autor) VALUES (?, ?, ?, ?, ?)",
+            c.execute("INSERT INTO articole (titlu, continut, data_postarii, vizibil, autor) VALUES (%s, %s, %s, %s, %s)",
                       (titlu, continut_complet, data_postarii, vizibil, autor))
             categorii_selectate = request.form.getlist('categorii')  # obține lista bifată din formular
             c.execute("SELECT id, nume FROM categorii")
@@ -161,7 +161,7 @@ def admin_panel():
 
             for cat in categorii_selectate:
                 if cat in categorie_map:
-                    c.execute("INSERT INTO articol_categorie (articol_id, categorie_id) VALUES (?, ?)",
+                    c.execute("INSERT INTO articol_categorie (articol_id, categorie_id) VALUES (%s, %s)",
                               (c.lastrowid, categorie_map[cat]))
             conn.commit()
             mesaj = "Articol adăugat cu succes!"
@@ -182,7 +182,7 @@ def adauga_utilizator():
         with get_db_connection() as conn:
             c = conn.cursor()
             try:
-                c.execute("INSERT INTO utilizatori (username, parola) VALUES (?, ?)", (username, parola_hash))
+                c.execute("INSERT INTO utilizatori (username, parola) VALUES (%s, %s)", (username, parola_hash))
                 mesaj = '✅ Utilizator adăugat cu succes.'
             except sqlite3.IntegrityError:
                 mesaj = '⚠️ Acest nume de utilizator există deja.'
@@ -204,7 +204,7 @@ def modifica_profil():
 
         with get_db_connection() as conn:
             c = conn.cursor()
-            c.execute("UPDATE utilizatori SET username = ?, parola = ? WHERE username = ?",
+            c.execute("UPDATE utilizatori SET username = %s, parola = %s WHERE username = %s",
                       (user_nou, parola_hash, user_vechi))
             session['user'] = user_nou
             mesaj = '✅ Cont actualizat cu succes.'
@@ -247,12 +247,12 @@ def editeaza_articol(id):
             for poza in poze_salvate:
                 continut += f'<br><img src="/static/uploads/{poza}" style="max-width:100%;">'
 
-            c.execute("UPDATE articole SET titlu=?, continut=?, vizibil=? WHERE id=?",
+            c.execute("UPDATE articole SET titlu=%s, continut=%s, vizibil=%s WHERE id=%s",
                       (titlu, continut, vizibil, id))
             conn.commit()
             return redirect(url_for('lista_articole'))
 
-        c.execute("SELECT titlu, continut, vizibil FROM articole WHERE id=?", (id,))
+        c.execute("SELECT titlu, continut, vizibil FROM articole WHERE id=%s", (id,))
         articol = c.fetchone()
 
     return render_template("admin_editeaza.html", articol=articol, id=id)
@@ -263,7 +263,7 @@ def sterge_articol(id):
         return redirect(url_for('login'))
     with get_db_connection() as conn:
         c = conn.cursor()
-        c.execute("DELETE FROM articole WHERE id=?", (id,))
+        c.execute("DELETE FROM articole WHERE id=%s", (id,))
         conn.commit()
     return redirect(url_for('lista_articole'))
 
@@ -271,18 +271,18 @@ def sterge_articol(id):
 def articol_complet(id):
     with get_db_connection() as conn:
         c = conn.cursor()
-        c.execute("SELECT titlu, continut, data_postarii, autor FROM articole WHERE id = ? AND vizibil = 1", (id,))
+        c.execute("SELECT titlu, continut, data_postarii, autor FROM articole WHERE id = %s AND vizibil = 1", (id,))
         articol = c.fetchone()
 
         # număr total like-uri
-        c.execute("SELECT COUNT(*) FROM likes WHERE articol_id = ?", (id,))
+        c.execute("SELECT COUNT(*) FROM likes WHERE articol_id = %s", (id,))
         total_likes = c.fetchone()[0]
 
         # userul curent a dat like?
         user = session.get('user')
         a_dat_like = False
         if user:
-            c.execute("SELECT 1 FROM likes WHERE articol_id = ? AND username = ?", (id, user))
+            c.execute("SELECT 1 FROM likes WHERE articol_id = %s AND username = %s", (id, user))
             a_dat_like = c.fetchone() is not None
 
         if articol:
@@ -300,7 +300,7 @@ def pagina_categorie(categorie):
             FROM articole a
             JOIN articol_categorie ac ON a.id = ac.articol_id
             JOIN categorii c ON c.id = ac.categorie_id
-            WHERE c.nume = ? AND a.vizibil = 1
+            WHERE c.nume = %s AND a.vizibil = 1
             ORDER BY a.id DESC
         """, (categorie,))
         articole = c.fetchall()
@@ -319,15 +319,15 @@ def toggle_like(id):
     user = session['user']
     with get_db_connection() as conn:
         c = conn.cursor()
-        c.execute("SELECT * FROM likes WHERE articol_id = ? AND username = ?", (id, user))
+        c.execute("SELECT * FROM likes WHERE articol_id = %s AND username = %s", (id, user))
         exista = c.fetchone()
 
         if exista:
             # Retrage like
-            c.execute("DELETE FROM likes WHERE articol_id = ? AND username = ?", (id, user))
+            c.execute("DELETE FROM likes WHERE articol_id = %s AND username = %s", (id, user))
         else:
             # Adaugă like
-            c.execute("INSERT INTO likes (articol_id, username) VALUES (?, ?)", (id, user))
+            c.execute("INSERT INTO likes (articol_id, username) VALUES (%s, %s)", (id, user))
         conn.commit()
 
     return redirect(url_for('articol_complet', id=id))
@@ -340,26 +340,30 @@ def api_toggle_like(id):
     user = session['user']
     with get_db_connection() as conn:
         c = conn.cursor()
-        c.execute("SELECT * FROM likes WHERE articol_id = ? AND username = ?", (id, user))
+        c.execute("SELECT * FROM likes WHERE articol_id = %s AND username = %s", (id, user))
         exista = c.fetchone()
 
         if exista:
-            c.execute("DELETE FROM likes WHERE articol_id = ? AND username = ?", (id, user))
+            c.execute("DELETE FROM likes WHERE articol_id = %s AND username = %s", (id, user))
             actiune = 'unliked'
         else:
-            c.execute("INSERT INTO likes (articol_id, username) VALUES (?, ?)", (id, user))
+            c.execute("INSERT INTO likes (articol_id, username) VALUES (%s, %s)", (id, user))
             actiune = 'liked'
 
         conn.commit()
         # returnăm numărul actualizat de like-uri
-        c.execute("SELECT COUNT(*) FROM likes WHERE articol_id = ?", (id,))
+        c.execute("SELECT COUNT(*) FROM likes WHERE articol_id = %s", (id,))
         total = c.fetchone()[0]
 
     return jsonify({"success": True, "actiune": actiune, "total": total})
 
+@app.route('/init-db-secret')
+def init_db_trigger():
+    init_db()
+    return "Baza de date a fost inițializată!"
+
 # Pornim aplicația
 if __name__ == "__main__":
-    init_db()
     import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
