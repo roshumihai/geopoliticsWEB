@@ -1,17 +1,53 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
+<div class="header">
+  <h2>Politica & Geopolitica Liberă</h2>
+</div>
 
+<div class="row">
+  <!-- Coloana principală -->
+  <div class="leftcolumn">
     {% for id, titlu, continut, data_postarii, autor in articole %}
-    <div class="articol">
+      <div class="card">
         <h2><a href="{{ url_for('articol_complet', id=id) }}">{{ titlu }}</a></h2>
-        <p class="data">{{ data_postarii }} | Scris de: <strong>{{ autor }}</strong></p>
-        <p>{{ continut|truncate(500)|safe }}</p>
-    </div>
-    {% else %}
-        <p>Nu există articole vizibile momentan.</p>
-    {% endfor %}
+        <h5>{{ data_postarii }} | Scris de <strong>{{ autor }}</strong></h5>
 
+        {% set imagine = continut | regex_search('<img[^>]+src="([^"]+)"') %}
+        {% if imagine %}
+            <img src="{{ imagine.group(1) }}" style="width:100%; max-height:250px; object-fit:cover;">
+        {% else %}
+            <img src="{{ url_for('static', filename='img/fallback.jpg') }}" style="width:100%; max-height:250px; object-fit:cover;">
+        {% endif %}
+
+        <p>{{ continut|striptags|truncate(300) }}</p>
+      </div>
+    {% else %}
+      <p>Nu există articole vizibile momentan.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Coloana dreaptă -->
+  <div class="rightcolumn">
+    <div class="card">
+      <h2>Despre site</h2>
+      <div class="fakeimg" style="height:100px;">Imagine</div>
+      <p>Un spațiu de reflecție liberă despre politică, istorie și forțele geopolitice globale.</p>
+    </div>
+    <div class="card">
+      <h3>Postări Populare</h3>
+      <div class="fakeimg">Imagine</div><br>
+      <div class="fakeimg">Imagine</div><br>
+      <div class="fakeimg">Imagine</div>
+    </div>
+    <div class="card">
+      <h3>Urmărește-ne</h3>
+      <p>Social media, email etc.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <h2>© 2025 Politica & Geopolitica Liberă</h2>
 </div>
 {% endblock %}

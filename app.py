@@ -6,9 +6,13 @@ import psycopg2
 import os
 import urllib.parse as urlparse
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+import re
+from jinja2 import pass_context
 
 
 app = Flask(__name__)
+load_dotenv()
 app.secret_key = 'super-secret-key'
 bcrypt = Bcrypt(app)
 
@@ -19,11 +23,20 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db_connection():
-    db_name = os.environ.get('DB_NAME')
-    db_user = os.environ.get('DB_USER')
-    db_pass = os.environ.get('DB_PASS')
-    db_host = os.environ.get('DB_HOST')
-    db_port = os.environ.get('DB_PORT')
+    if os.environ.get('RENDER') == 'true':
+        # producție
+        db_name = os.environ.get('DB_NAME')
+        db_user = os.environ.get('DB_USER')
+        db_pass = os.environ.get('DB_PASS')
+        db_host = os.environ.get('DB_HOST')
+        db_port = os.environ.get('DB_PORT')
+    else:
+        # local
+        db_name = 'geopolitica_dev'
+        db_user = 'postgres'
+        db_pass = 'Abecedar1234'
+        db_host = 'localhost'
+        db_port = 5432
 
     return psycopg2.connect(
         dbname=db_name,
@@ -363,13 +376,20 @@ def api_toggle_like(id):
 
     return jsonify({"success": True, "actiune": actiune, "total": total})
 
-@app.route('/init-db-secret')
-def init_db_trigger():
-    init_db()
-    return "Baza de date a fost inițializată!"
+if os.environ.get("ENV") != "production":
+    @app.route('/init-db-secret')
+    def init_db_trigger():
+        init_db()
+        return "Baza de date a fost inițializată!"
+
+@app.template_filter('regex_search')
+@pass_context
+def regex_search(context, s, pattern):
+    return re.search(pattern, s) if s else None
 
 # Pornim aplicația
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    debug = os.environ.get("FLASK_DEBUG", "true").lower() == "true"
+    app.run(host="0.0.0.0", port=port, debug=debug)
