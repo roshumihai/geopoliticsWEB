@@ -1,0 +1,38 @@
+# Ignoră fișiere de configurare private
+.env
+*.env
+
+# Ignoră fișiere temporare Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignoră baze de date SQLite (dacă ai folosit la început)
+*.sqlite3
+*.db
+
+# Ignoră fișiere log
+*.log
+
+# Ignoră uploads locale (doar dacă nu vrei să urci imaginile salvate local)
+static/uploads/
+
+# Ignoră foldere de sistem
+.DS_Store
+Thumbs.db
+
+# Ignoră mediul virtual
+venv/
+.venv/
+
+# Ignoră fișiere generate de editori
+.vscode/
+.idea/
+
+# Ignoră fișiere de build/deploy
+*.bak
+*.swp
+*.tmp
+
+# Render build cache
+render-build/
