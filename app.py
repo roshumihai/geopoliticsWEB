@@ -327,9 +327,6 @@ def pagina_categorie(categorie):
     titlu_pagina = f"Articole din categoria: {categorie.capitalize()}"
     return render_template("home.html", articole=articole, titlu_pagina=titlu_pagina)
 
-    titlu_pagina = f"Articole din categoria: {categorie.capitalize()}"
-    return render_template("home.html", articole=articole, titlu_pagina=titlu_pagina)
-
 @app.route('/toggle_like/<int:id>', methods=['POST'])
 def toggle_like(id):
     if 'user' not in session:
